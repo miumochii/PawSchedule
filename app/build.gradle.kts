@@ -1,51 +1,108 @@
 plugins {
-    id("com.android.application") // Indica que es una app de Android.
-    id("org.jetbrains.kotlin.android") // Permite usar Kotlin.
-    id("com.google.devtools.ksp") version "1.9.22-1.0.17"  // Autoescribe código.
-    id("kotlin-parcelize") // Permite pasar datos entre pantallas.
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt") // Para Room
 }
 
 android {
-    namespace = "com.martinvergara_diegoboggle.pawschedule" // Nombre del proyecto.
-    compileSdk = 36 // Versión de Android.
+    namespace = "com.martinvergara_diegoboggle.pawschedule"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.martinvergara_diegoboggle.pawschedule" // Identificador de la app.
-        minSdk = 24 // La versión más antigua de Android que puede usarla.
-        targetSdk = 36// La versión para la que está optimizada.
+        applicationId = "com.martinvergara_diegoboggle.pawschedule"
+        minSdk = 24
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "1.8"
     }
 
     buildFeatures {
-        viewBinding = true
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.1"
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx) // Utilidades básicas de Kotlin para Android.
-    implementation(libs.androidx.appcompat) // Para que la app sea compatible con versiones antiguas de Android.
-    implementation(libs.material) // Componentes visuales: botones, menús, etc.
-    implementation(libs.androidx.constraintlayout) // Para organizar los elementos en la pantalla.
-    implementation(libs.androidx.navigation.fragment.ktx) // Gestiona la navegación.
-    implementation(libs.androidx.navigation.ui.ktx) // Conecta la navegación con la interfaz.
-    implementation(libs.androidx.lifecycle.viewmodel.ktx) // El cerebro de cada pantalla, donde va la lógica.
-    implementation(libs.androidx.lifecycle.livedata.ktx) // Permite que la pantalla reaccione a cambios en los datos.
-    implementation(libs.androidx.room.runtime) // La base de datos.
-    implementation(libs.androidx.room.ktx) // Ayudas para usar la base de datos con Kotlin.
-    ksp(libs.androidx.room.compiler.v261) // Genera el código necesario para que Room funcione.
-    implementation(libs.kotlinx.coroutines.android) // Evita que la app se congele.
-    testImplementation(libs.junit) // Framework de pruebas.
-    androidTestImplementation(libs.androidx.junit)
+    // Core Android
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.activity:activity-compose:1.8.2")
+
+    // Jetpack Compose
+    implementation(platform("androidx.compose:compose-bom:2023.10.01"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+
+    // Navegación Compose
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+
+    // ViewModel Compose
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
+
+    // Room Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Icons Extended (para más íconos)
+    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+
+    // Coil para cargar imágenes
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // CameraX para acceso a cámara
+    implementation("androidx.camera:camera-camera2:1.3.1")
+    implementation("androidx.camera:camera-lifecycle:1.3.1")
+    implementation("androidx.camera:camera-view:1.3.1")
+
+    // Permisos
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
+
+    // Testing
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.10.01"))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
