@@ -8,29 +8,32 @@ import kotlinx.coroutines.flow.Flow
 interface MascotaDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(mascota: MascotaEntity): Long
+    suspend fun insertar(mascota: MascotaEntity): Long
 
     @Update
-    suspend fun update(mascota: MascotaEntity)
+    suspend fun actualizar(mascota: MascotaEntity)
 
     @Delete
-    suspend fun delete(mascota: MascotaEntity)
+    suspend fun eliminar(mascota: MascotaEntity)
 
     @Query("SELECT * FROM mascotas WHERE id = :id")
-    suspend fun getMascotaById(id: Int): MascotaEntity?
+    suspend fun obtenerPorId(id: Int): MascotaEntity?
 
-    @Query("SELECT * FROM mascotas WHERE clienteId = :clienteId ORDER BY nombre ASC")
-    fun getMascotasByCliente(clienteId: Int): Flow<List<MascotaEntity>>
+    @Query("SELECT * FROM mascotas WHERE idDueno = :idDueno ORDER BY nombre ASC")
+    fun obtenerPorDueno(idDueno: Int): Flow<List<MascotaEntity>>
 
     @Query("SELECT * FROM mascotas ORDER BY nombre ASC")
-    fun getAllMascotas(): Flow<List<MascotaEntity>>
+    fun obtenerTodas(): Flow<List<MascotaEntity>>
 
     @Query("SELECT * FROM mascotas WHERE especie = :especie")
-    fun getMascotasByEspecie(especie: String): Flow<List<MascotaEntity>>
+    fun obtenerPorEspecie(especie: String): Flow<List<MascotaEntity>>
 
     @Query("SELECT * FROM mascotas WHERE nombre LIKE '%' || :query || '%' OR raza LIKE '%' || :query || '%'")
-    fun searchMascotas(query: String): Flow<List<MascotaEntity>>
+    fun buscarMascotas(query: String): Flow<List<MascotaEntity>>
 
-    @Query("SELECT COUNT(*) FROM mascotas WHERE clienteId = :clienteId")
-    suspend fun countMascotasByCliente(clienteId: Int): Int
+    @Query("SELECT COUNT(*) FROM mascotas WHERE idDueno = :idDueno")
+    suspend fun contarMascotasPorDueno(idDueno: Int): Int
+
+    @Query("UPDATE mascotas SET activo = 0 WHERE id = :id")
+    suspend fun desactivar(id: Int)
 }
