@@ -1,4 +1,4 @@
-package data.local.entities
+package com.martinvergara_diegoboggle.pawschedule.data.local.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
     tableName = "mascotas",
     foreignKeys = [
         ForeignKey(
-            entity = Usuario::class,
+            entity = UsuarioEntity::class,
             parentColumns = ["id"],
             childColumns = ["idDueno"],
             onDelete = ForeignKey.CASCADE
