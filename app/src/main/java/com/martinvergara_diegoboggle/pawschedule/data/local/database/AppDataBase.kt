@@ -1,4 +1,4 @@
-package data.local.database
+package com.martinvergara_diegoboggle.pawschedule.data.local.database
 
 import android.content.Context
 import androidx.room.Database
@@ -48,7 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        private class DatabaseCallback : RoomDatabase.Callback() {
+        private class DatabaseCallback : Callback() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 INSTANCE?.let { database ->
