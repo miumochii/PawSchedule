@@ -1,6 +1,7 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.pet_profile
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.collectAsState
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
