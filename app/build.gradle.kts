@@ -1,15 +1,16 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 android {
     namespace = "martinvergara_diegoboggle.pawschedule"
-    compileSdk = 34 // Versión estable (Android 14)
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "martinvergara_diegoboggle.pawschedule"
-        minSdk = 24 // Compatible con la mayoría de dispositivos
+        minSdk = 24
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -37,10 +38,11 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
+        // Esta línea ya no es necesaria cuando usas el plugin de compose, pero no hace daño dejarla
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3" // Versión estable del compilador de Compose
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
@@ -50,41 +52,25 @@ android {
 }
 
 dependencies {
-    // Versiones estables de las librerías
-    val coreKtxVersion = "1.12.0"
-    val lifecycleVersion = "2.6.2"
-    val activityComposeVersion = "1.8.2"
-    val composeBomVersion = "2023.10.01"
-    val navigationVersion = "2.7.6"
-    val junitVersion = "4.13.2"
-    val androidJunitVersion = "1.1.5"
-    val espressoVersion = "3.5.1"
-
-    // Dependencias de Android y Jetpack Compose
-    implementation("androidx.core:core-ktx:$coreKtxVersion")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
-    implementation("androidx.activity:activity-compose:$activityComposeVersion")
-    implementation(platform("androidx.compose:compose-bom:$composeBomVersion"))
+    // Aquí puedes dejar tus dependencias como estaban, ya que no usan la sintaxis 'libs'
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation(platform("androidx.compose:compose-bom:2023.10.01"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-
-    // --- DEPENDENCIAS CLAVE PARA TU PROBLEMA ---
-    // 1. Para NavController, navigate(), etc.
-    implementation("androidx.navigation:navigation-compose:$navigationVersion")
-    // 2. Para poder usar viewModel()
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
-    // 3. Para poder usar .collectAsState()
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:$lifecycleVersion")
-    // --- FIN DE DEPENDENCIAS CLAVE ---
     implementation("androidx.compose.material:material-icons-extended-android:1.6.5")
 
-    // Dependencias de Testing
-    testImplementation("junit:junit:$junitVersion")
-    androidTestImplementation("androidx.test.ext:junit:$androidJunitVersion")
-    androidTestImplementation("androidx.test.espresso:espresso-core:$espressoVersion")
-    androidTestImplementation(platform("androidx.compose:compose-bom:$composeBomVersion"))
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation(platform("androidx.compose:compose-bom:2023.10.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
