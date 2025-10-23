@@ -5,12 +5,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import martinvergara_diegoboggle.pawschedule.model.Pet
 
 object PetRepository {
-    private val _pets = MutableStateFlow<List<Pet>>(
-        listOf(
-            Pet(id = "1", name = "Rocky", breed = "Mestizo", ownerId = "1"),
-            Pet(id = "2", name = "Luna", breed = "Siberiano", ownerId = "1")
-        )
-    )
+    private val _pets = MutableStateFlow<List<Pet>>(emptyList())
     val pets = _pets.asStateFlow()
 
     fun addPet(pet: Pet) {
