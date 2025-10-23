@@ -19,13 +19,16 @@ interface CitaDao {
     @Query("SELECT * FROM citas WHERE id = :id")
     suspend fun obtenerPorId(id: Int): CitaEntity?
 
-    @Query("SELECT * FROM citas WHERE idCliente = :idCliente ORDER BY fecha DESC")
+    // --- CORRECCIÓN 1: 'idCliente' -> 'clienteId' ---
+    @Query("SELECT * FROM citas WHERE clienteId = :idCliente ORDER BY fecha DESC")
     fun obtenerPorCliente(idCliente: Int): Flow<List<CitaEntity>>
 
-    @Query("SELECT * FROM citas WHERE idVeterinario = :idVeterinario ORDER BY fecha DESC")
+    // --- CORRECCIÓN 2: 'idVeterinario' -> 'veterinarioId' ---
+    @Query("SELECT * FROM citas WHERE veterinarioId = :idVeterinario ORDER BY fecha DESC")
     fun obtenerPorVeterinario(idVeterinario: Int): Flow<List<CitaEntity>>
 
-    @Query("SELECT * FROM citas WHERE idMascota = :idMascota ORDER BY fecha DESC")
+    // --- CORRECCIÓN 3: 'idMascota' -> 'mascotaId' ---
+    @Query("SELECT * FROM citas WHERE mascotaId = :idMascota ORDER BY fecha DESC")
     fun obtenerPorMascota(idMascota: Int): Flow<List<CitaEntity>>
 
     @Query("SELECT * FROM citas WHERE estado = :estado ORDER BY fecha ASC")
@@ -37,9 +40,11 @@ interface CitaDao {
     @Query("SELECT * FROM citas ORDER BY fecha DESC")
     fun obtenerTodas(): Flow<List<CitaEntity>>
 
-    @Query("UPDATE citas SET estado = :nuevoEstado, fechaActualizacion = :timestamp WHERE id = :id")
-    suspend fun actualizarEstado(id: Int, nuevoEstado: String, timestamp: Long)
+    // --- CORRECCIÓN 4: Eliminada 'fechaActualizacion' porque no existe en CitaEntity ---
+    @Query("UPDATE citas SET estado = :nuevoEstado WHERE id = :id")
+    suspend fun actualizarEstado(id: Int, nuevoEstado: String) // Se elimina el parámetro 'timestamp'
 
-    @Query("SELECT COUNT(*) FROM citas WHERE idVeterinario = :idVet AND fecha BETWEEN :inicio AND :fin")
+    // --- CORRECCIÓN 5: 'idVeterinario' -> 'veterinarioId' ---
+    @Query("SELECT COUNT(*) FROM citas WHERE veterinarioId = :idVet AND fecha BETWEEN :inicio AND :fin")
     suspend fun contarCitasVeterinarioEnRango(idVet: Int, inicio: Long, fin: Long): Int
 }

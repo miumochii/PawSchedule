@@ -1,46 +1,25 @@
+// En tu archivo CitaEntity.kt
+
 package com.martinvergara_diegoboggle.pawschedule.data.local.entities
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(
-    tableName = "citas",
-    foreignKeys = [
-        ForeignKey(
-            entity = MascotaEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["idMascota"],
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = UsuarioEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["idVeterinario"],
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = UsuarioEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["idCliente"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
-)
+@Entity(tableName = "citas")
 data class CitaEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val idMascota: Int,
-    val idVeterinario: Int,
-    val idCliente: Int,
-    val fecha: Long, // Timestamp de la fecha/hora de la cita
-    val motivo: String,
-    val estado: String, // "PENDIENTE", "CONFIRMADA", "EN_PROCESO", "FINALIZADA", "CANCELADA"
-    val diagnostico: String? = null,
-    val tratamiento: String? = null,
-    val observaciones: String? = null,
-    val costo: Double? = null,
-    val fechaCreacion: Long = System.currentTimeMillis(),
-    val fechaActualizacion: Long = System.currentTimeMillis()
-)
+    val clienteId: Int,
+    val veterinarioId: Int,
+    val mascotaId: Int,
+    val fecha: Long,
 
+    // --- INICIO DE LA CORRECCIÓN ---
+    val horaInicio: String, // <-- AÑADE ESTA LÍNEA
+    val horaFin: String,    // <-- Probablemente también necesites esta
+    // --- FIN DE LA CORRECCIÓN ---
+
+    val motivo: String,
+    val estado: String,
+    val observaciones: String
+)

@@ -1,4 +1,4 @@
-package com.martinvergara_diegoboggle.pawschedule.data.local.repository
+package com.martinvergara_diegoboggle.pawschedule.data.local.repository // Asegúrate que esta sea la ruta correcta
 
 import com.martinvergara_diegoboggle.pawschedule.data.local.dao.CitaDao
 import com.martinvergara_diegoboggle.pawschedule.data.local.entities.CitaEntity
@@ -34,9 +34,12 @@ class CitaRepository(private val citaDao: CitaDao) {
         citaDao.actualizar(cita)
     }
 
+    // ------------------- INICIO DE LA CORRECCIÓN -------------------
     suspend fun actualizarEstado(id: Int, nuevoEstado: String) {
-        citaDao.actualizarEstado(id, nuevoEstado, System.currentTimeMillis())
+        // Simplemente borramos el System.currentTimeMillis() que ya no se necesita
+        citaDao.actualizarEstado(id, nuevoEstado)
     }
+    // ------------------- FIN DE LA CORRECCIÓN -------------------
 
     suspend fun eliminar(cita: CitaEntity) {
         citaDao.eliminar(cita)

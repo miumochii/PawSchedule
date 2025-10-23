@@ -34,6 +34,8 @@ interface MascotaDao {
     @Query("SELECT COUNT(*) FROM mascotas WHERE idDueno = :idDueno")
     suspend fun contarMascotasPorDueno(idDueno: Int): Int
 
+    // ------------------- INICIO DE LA CORRECCIÓN -------------------
     @Query("UPDATE mascotas SET activo = 0 WHERE id = :id")
-    suspend fun desactivar(id: Int)
+    suspend fun desactivar(id: Int) // <-- Corregido: Se elimina el retorno ': Int'
+    // ------------------- FIN DE LA CORRECCIÓN -------------------
 }
