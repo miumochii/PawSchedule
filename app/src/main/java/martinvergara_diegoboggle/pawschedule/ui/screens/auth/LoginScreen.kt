@@ -19,7 +19,7 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // IMPORTANTE: Añade una imagen llamada 'app_logo.png' a tu carpeta res/drawable
+        
         Image(
             painter = painterResource(id = R.drawable.app_logo),
             contentDescription = "Logo de PawSchedule",
