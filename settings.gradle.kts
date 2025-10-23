@@ -1,9 +1,10 @@
 // settings.gradle.kts (Archivo del Proyecto Raíz)
 
 pluginManagement {
-    repositories {google()
+    repositories {
+        google()
         mavenCentral()
-        gradlePluginPortal() // Asegúrate de que este repositorio está aquí
+        gradlePluginPortal()
     }
 }
 
