@@ -14,4 +14,7 @@ class HomeViewModel : ViewModel() {
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
+    fun deleteAppointment(appointmentId: String) {
+        repository.deleteAppointment(appointmentId)
+    }
 }
