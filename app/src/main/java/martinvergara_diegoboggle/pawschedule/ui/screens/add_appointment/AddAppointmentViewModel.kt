@@ -1,36 +1,63 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.add_appointment
+
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import martinvergara_diegoboggle.pawschedule.data.repository.AppointmentRepository
+import martinvergara_diegoboggle.pawschedule.data.repository.PetRepository
 import martinvergara_diegoboggle.pawschedule.model.Appointment
+import martinvergara_diegoboggle.pawschedule.model.Pet
+
 class AddAppointmentViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(AppointmentFormUiState())
     val uiState: StateFlow<AppointmentFormUiState> = _uiState.asStateFlow()
+
+    // NUEVO: Lista de mascotas para el selector (Dropdown)
+    private val _availablePets = MutableStateFlow<List<Pet>>(emptyList())
+    val availablePets: StateFlow<List<Pet>> = _availablePets.asStateFlow()
+
+    init {
+        // Cargar las mascotas existentes al iniciar
+        viewModelScope.launch {
+            PetRepository.pets.collect { pets ->
+                _availablePets.value = pets
+            }
+        }
+    }
+
     fun onPetNameChange(name: String) {
         _uiState.update { it.copy(petName = name, errors = it.errors.copy(petNameError = null)) }
     }
+
     fun onOwnerNameChange(name: String) {
         _uiState.update { it.copy(ownerName = name, errors = it.errors.copy(ownerNameError = null)) }
     }
+
     fun onDateChange(date: String) {
         _uiState.update { it.copy(date = date, errors = it.errors.copy(dateError = null)) }
     }
+
     fun onTimeChange(time: String) {
         _uiState.update { it.copy(time = time, errors = it.errors.copy(timeError = null)) }
     }
+
     fun onSymptomsChange(symptoms: String) {
         _uiState.update { it.copy(symptoms = symptoms, errors = it.errors.copy(symptomsError = null)) }
     }
+
     fun onTermsChange(agreed: Boolean) {
         _uiState.update { it.copy(hasAgreedToTerms = agreed, errors = it.errors.copy(termsError = null)) }
     }
+
     fun validateAndSave(): Boolean {
         val state = _uiState.value
         var hasErrors = false
         var currentErrors = AppointmentFormErrors()
+
         if (state.petName.isBlank()) {
             currentErrors = currentErrors.copy(petNameError = "El nombre de la mascota es obligatorio")
             hasErrors = true
@@ -55,7 +82,9 @@ class AddAppointmentViewModel : ViewModel() {
             currentErrors = currentErrors.copy(termsError = "Debe aceptar los términos")
             hasErrors = true
         }
+
         _uiState.update { it.copy(errors = currentErrors) }
+
         if (!hasErrors) {
             val newAppointment = Appointment(
                 petName = state.petName,
@@ -64,9 +93,31 @@ class AddAppointmentViewModel : ViewModel() {
                 time = state.time,
                 symptoms = state.symptoms
             )
-            AppointmentRepository.addAppointment(newAppointment)
+            // Usamos viewModelScope para estar listos para la Base de Datos
+            viewModelScope.launch {
+                AppointmentRepository.addAppointment(newAppointment)
+            }
             return true
         }
         return false
     }
 }
+
+data class AppointmentFormUiState(
+    val petName: String = "",
+    val ownerName: String = "",
+    val date: String = "",
+    val time: String = "",
+    val symptoms: String = "",
+    val hasAgreedToTerms: Boolean = false,
+    val errors: AppointmentFormErrors = AppointmentFormErrors()
+)
+
+data class AppointmentFormErrors(
+    val petNameError: String? = null,
+    val ownerNameError: String? = null,
+    val dateError: String? = null,
+    val timeError: String? = null,
+    val symptomsError: String? = null,
+    val termsError: String? = null
+)

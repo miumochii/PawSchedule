@@ -1,4 +1,6 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.auth
+
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -10,24 +12,33 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import martinvergara_diegoboggle.pawschedule.R
-import martinvergara_diegoboggle.pawschedule.navigation.AppScreens
+import martinvergara_diegoboggle.pawschedule.navigation.AppScreens // <--- CORREGIDO
+import martinvergara_diegoboggle.pawschedule.ui.BounceButton
+
 @Composable
 fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
     val uiState by authViewModel.uiState.collectAsState()
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        
+
         Image(
             painter = painterResource(id = R.drawable.app_logo),
             contentDescription = "Logo de PawSchedule",
             modifier = Modifier.size(120.dp)
         )
+
         Spacer(modifier = Modifier.height(24.dp))
+
         Text("Bienvenido a PawSchedule", style = MaterialTheme.typography.headlineSmall)
+
         Spacer(modifier = Modifier.height(24.dp))
+
         OutlinedTextField(
             value = uiState.email,
             onValueChange = authViewModel::onEmailChange,
@@ -35,7 +46,9 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
             modifier = Modifier.fillMaxWidth(),
             isError = uiState.errorMessage != null
         )
+
         Spacer(modifier = Modifier.height(16.dp))
+
         OutlinedTextField(
             value = uiState.password,
             onValueChange = authViewModel::onPasswordChange,
@@ -44,22 +57,32 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
             modifier = Modifier.fillMaxWidth(),
             isError = uiState.errorMessage != null
         )
-        uiState.errorMessage?.let {
-            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+
+        // Animación de error
+        AnimatedVisibility(visible = uiState.errorMessage != null) {
+            Text(
+                text = uiState.errorMessage ?: "",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 8.dp)
+            )
         }
+
         Spacer(modifier = Modifier.height(32.dp))
-        Button(
+
+        BounceButton(
+            text = "Ingresar",
             onClick = {
                 if (authViewModel.login()) {
+                    // CORREGIDO: Quitamos las comillas y el .kt
                     navController.navigate(AppScreens.HomeScreen.route) {
                         popUpTo(AppScreens.LoginScreen.route) { inclusive = true }
                     }
                 }
             },
             modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Ingresar")
-        }
+        )
+
+        // CORREGIDO: Quitamos las comillas y el .kt
         TextButton(onClick = { navController.navigate(AppScreens.RegisterScreen.route) }) {
             Text("¿No tienes cuenta? Regístrate")
         }

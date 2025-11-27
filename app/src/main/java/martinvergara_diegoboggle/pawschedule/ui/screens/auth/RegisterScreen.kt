@@ -1,4 +1,6 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.auth
+
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -9,7 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import martinvergara_diegoboggle.pawschedule.navigation.AppScreens
+import martinvergara_diegoboggle.pawschedule.navigation.AppScreens // <--- CORREGIDO
+import martinvergara_diegoboggle.pawschedule.ui.BounceButton
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
@@ -27,7 +31,10 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
         }
     ) { paddingValues ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(paddingValues).padding(32.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(32.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -58,22 +65,29 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
                 modifier = Modifier.fillMaxWidth(),
                 isError = uiState.errorMessage != null
             )
-            uiState.errorMessage?.let {
-                Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 8.dp))
+
+            AnimatedVisibility(visible = uiState.errorMessage != null) {
+                Text(
+                    text = uiState.errorMessage ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
             }
+
             Spacer(modifier = Modifier.height(32.dp))
-            Button(
+
+            BounceButton(
+                text = "Registrarse",
                 onClick = {
                     if (authViewModel.register()) {
+                        // CORREGIDO: Quitamos las comillas y el .kt
                         navController.navigate(AppScreens.HomeScreen.route) {
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         }
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Registrarse")
-            }
+            )
         }
     }
 }

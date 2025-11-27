@@ -19,23 +19,42 @@ class AddPetViewModel : ViewModel() {
         _uiState.update { it.copy(breed = breed) }
     }
 
+    // --- NUEVO: Función para recibir la foto de la galería ---
+    fun onPhotoSelected(uri: String) {
+        _uiState.update { it.copy(photoUri = uri) }
+    }
+
+    // --- NUEVO: Función para recibir la ubicación del GPS ---
+    fun onLocationFound(location: String) {
+        _uiState.update { it.copy(location = location) }
+    }
+
     fun savePet(): Boolean {
         if (uiState.value.name.isBlank()) {
             _uiState.update { it.copy(nameError = "El nombre es obligatorio") }
             return false
         }
+
+        // Creamos la mascota
+        // Nota: Por ahora guardamos nombre y raza.
+        // Cuando configures la Base de Datos completa, podrás agregar photoUri y location al modelo Pet.
         val newPet = Pet(
             name = uiState.value.name,
             breed = uiState.value.breed.ifBlank { "Raza desconocida" },
-            ownerId = "1" // Simulado
+            // Si tu modelo Pet requiere ownerId, mantenlo; si usas Room con autogenerate, esto cambiará después.
+            // Por ahora lo dejo como lo tenías para que no falle:
+            ownerId = "1"
         )
         PetRepository.addPet(newPet)
         return true
     }
 }
 
+// --- ACTUALIZADO: Agregamos photoUri y location al estado ---
 data class AddPetUiState(
     val name: String = "",
     val breed: String = "",
-    val nameError: String? = null
+    val nameError: String? = null,
+    val photoUri: String? = null, // Para guardar la ruta de la imagen
+    val location: String = ""     // Para guardar las coordenadas
 )
