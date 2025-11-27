@@ -35,7 +35,7 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text("Bienvenido a PawSchedule", style = MaterialTheme.typography.headlineSmall)
+        Text("Bienvenido a PawSchedule", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.primary)
 
         Spacer(modifier = Modifier.height(24.dp))
 
