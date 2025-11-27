@@ -1,5 +1,7 @@
 package martinvergara_diegoboggle.pawschedule.data.network
 
+// CONFIGURACIÓN DEL SISTEMA DE DE CONEXIÓN A BACKEND
+
 import martinvergara_diegoboggle.pawschedule.model.Appointment
 import martinvergara_diegoboggle.pawschedule.model.Pet
 import retrofit2.Response
@@ -10,8 +12,6 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface PawApiService {
-
-    // --- ENDPOINTS MASCOTAS ---
 
     @GET("pets/{owner_id}")
     suspend fun getPets(@Path("owner_id") ownerId: Int): List<Pet>

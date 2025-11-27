@@ -1,5 +1,7 @@
 package com.martinvergara_diegoboggle.pawschedule
 
+// IMPORTANTE MENCIONAR: ESTE CÓDIGO ES DE LA PLANTILLA, YA NO SE UTILIZA.
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent

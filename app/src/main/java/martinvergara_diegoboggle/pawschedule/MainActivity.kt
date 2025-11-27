@@ -1,5 +1,5 @@
 package martinvergara_diegoboggle.pawschedule
-
+//ESTE ES PARA ARRANCAR LA APP
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,10 +13,6 @@ import martinvergara_diegoboggle.pawschedule.ui.theme.PawScheduleTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // ✅ CORRECCIÓN: Ya NO cargamos datos aquí
-        // Los datos se cargan automáticamente después del login/register
-        // en AuthViewModel cuando el usuario se autentica
 
         setContent {
             PawScheduleTheme {

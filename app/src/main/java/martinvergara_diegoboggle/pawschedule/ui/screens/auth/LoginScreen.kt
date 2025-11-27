@@ -1,5 +1,7 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.auth
 
+//LOGINSCREEN
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -26,7 +28,6 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // ✅ CORRECCIÓN: Usamos Icon en vez de Image
         Icon(
             imageVector = Icons.Default.Pets,
             contentDescription = "Logo de PawSchedule",
@@ -73,7 +74,6 @@ fun LoginScreen(navController: NavController, authViewModel: AuthViewModel) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // ✅ CORRECCIÓN: Usamos callback para navegar después del éxito
         BounceButton(
             text = "Ingresar",
             onClick = {

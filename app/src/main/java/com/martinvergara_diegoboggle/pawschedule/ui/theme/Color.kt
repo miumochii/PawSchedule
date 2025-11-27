@@ -1,5 +1,7 @@
 package com.martinvergara_diegoboggle.pawschedule.ui.theme
 
+// IMPORTANTE MENCIONAR: ESTE CÓDIGO ES DE LA PLANTILLA, YA NO SE UTILIZA.
+
 import androidx.compose.ui.graphics.Color
 
 val Purple80 = Color(0xFFD0BCFF)

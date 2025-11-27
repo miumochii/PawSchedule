@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+//DEPENDENCIAS
+
 android {
     namespace = "martinvergara_diegoboggle.pawschedule"
     compileSdk = 34
@@ -63,8 +65,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation("io.coil-kt:coil-compose:2.6.0")
-    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("io.coil-kt:coil-compose:2.6.0") //PARA CARGAR IMAGENES
+    implementation("com.google.android.gms:play-services-location:21.0.1") //PARA EL GPS
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
@@ -74,13 +76,10 @@ dependencies {
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    // Retrofit + Gson
-    implementation("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-    // OkHttp logging
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.squareup.retrofit2:retrofit:2.11.0") //ENVIA DATOS
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0") //CONVERSOR JSON - KOTLIN
+
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0") //INTERCEPTOR
 
 }

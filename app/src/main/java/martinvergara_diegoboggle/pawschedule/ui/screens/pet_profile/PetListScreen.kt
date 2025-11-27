@@ -3,9 +3,12 @@ package martinvergara_diegoboggle.pawschedule.ui.screens.pet_profile
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -15,11 +18,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import martinvergara_diegoboggle.pawschedule.model.Pet
 import martinvergara_diegoboggle.pawschedule.navigation.AppScreens
 import martinvergara_diegoboggle.pawschedule.ui.BounceButton
@@ -29,7 +35,7 @@ import martinvergara_diegoboggle.pawschedule.ui.screens.auth.AuthViewModel
 @Composable
 fun PetListScreen(
     navController: NavController,
-    authViewModel: AuthViewModel, // ✅ AGREGADO
+    authViewModel: AuthViewModel,
     viewModel: PetViewModel = viewModel()
 ) {
     val pets by viewModel.pets.collectAsState()
@@ -106,7 +112,7 @@ fun PetListScreen(
                     items = pets,
                     key = { it.id }
                 ) { pet ->
-                    PetCard(
+                    PetCardWithImage(
                         pet = pet,
                         onDeleteClick = { showDeleteDialog = pet }
                     )
@@ -122,7 +128,6 @@ fun PetListScreen(
                 confirmButton = {
                     BounceButton(
                         onClick = {
-                            // ✅ CORRECCIÓN: Pasamos userId
                             viewModel.deletePet(petToDelete.id, authViewModel.getCurrentUserId())
                             showDeleteDialog = null
                         },
@@ -143,7 +148,7 @@ fun PetListScreen(
 }
 
 @Composable
-fun PetCard(pet: Pet, onDeleteClick: () -> Unit) {
+fun PetCardWithImage(pet: Pet, onDeleteClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -153,12 +158,37 @@ fun PetCard(pet: Pet, onDeleteClick: () -> Unit) {
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.Pets,
-                contentDescription = null,
-                modifier = Modifier.size(40.dp).padding(end = 16.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
+            // ✅ IMAGEN DE LA MASCOTA (Circular)
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape)
+                    .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                if (pet.imageUri.isNotEmpty()) {
+                    // Si tiene imagen, la mostramos
+                    AsyncImage(
+                        model = pet.imageUri,
+                        contentDescription = "Foto de ${pet.name}",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    // Si no tiene imagen, mostramos el ícono de mascota
+                    Icon(
+                        imageVector = Icons.Default.Pets,
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Información de la mascota
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = pet.name,
@@ -172,9 +202,14 @@ fun PetCard(pet: Pet, onDeleteClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+
+            // Botón de eliminar
             IconButton(onClick = onDeleteClick) {
-                Icon(Icons.Default.Delete, contentDescription = "Eliminar mascota",
-                    tint = MaterialTheme.colorScheme.error)
+                Icon(
+                    Icons.Default.Delete,
+                    contentDescription = "Eliminar mascota",
+                    tint = MaterialTheme.colorScheme.error
+                )
             }
         }
     }

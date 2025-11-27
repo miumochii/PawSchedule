@@ -1,20 +1,52 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.add_pet
-
+//LOGICA DE LA PETSCREEN
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import martinvergara_diegoboggle.pawschedule.data.repository.PetRepository
-import martinvergara_diegoboggle.pawschedule.model.Pet
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import martinvergara_diegoboggle.pawschedule.data.network.CatApiClient
+import martinvergara_diegoboggle.pawschedule.data.network.DogApiClient
+import martinvergara_diegoboggle.pawschedule.data.repository.PetRepository
+import martinvergara_diegoboggle.pawschedule.model.Pet
 
 class AddPetViewModel(
-    // ✅ CORRECCIÓN: Recibimos el userId directamente
     private val userId: Int = 0
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AddPetUiState())
     val uiState: StateFlow<AddPetUiState> = _uiState.asStateFlow()
+
+    private val _breeds = MutableStateFlow<List<String>>(emptyList())
+    val breeds: StateFlow<List<String>> = _breeds.asStateFlow()
+
+    init {
+        loadBreeds()
+    }
+
+    private fun loadBreeds() {
+        viewModelScope.launch {
+            try {
+                val dogBreeds = DogApiClient.apiService.getBreeds().map { it.name }
+                val catBreeds = CatApiClient.apiService.getBreeds().map { it.name }
+
+                val allBreeds = (dogBreeds + catBreeds + listOf("Mestizo", "Otro"))
+                    .distinct()
+                    .sorted()
+
+                _breeds.value = allBreeds
+                Log.d("BREEDS_API", "✅ Razas cargadas: ${allBreeds.size} disponibles")
+            } catch (e: Exception) {
+                Log.e("BREEDS_API", "❌ Error al cargar razas: ${e.message}")
+                _breeds.value = listOf(
+                    "Mestizo", "Labrador", "Golden Retriever", "Pastor Alemán",
+                    "Bulldog", "Beagle", "Siamés", "Persa", "Maine Coon", "Otro"
+                )
+            }
+        }
+    }
 
     fun onNameChange(name: String) {
         _uiState.update { it.copy(name = name, nameError = null) }
@@ -53,7 +85,7 @@ class AddPetViewModel(
                 id = 0,
                 name = _uiState.value.name,
                 breed = _uiState.value.breed.ifBlank { "Mestizo" },
-                ownerId = userId, // ✅ CORRECCIÓN: Usamos el userId recibido
+                ownerId = userId,
                 imageUri = _uiState.value.photoUri ?: ""
             )
 

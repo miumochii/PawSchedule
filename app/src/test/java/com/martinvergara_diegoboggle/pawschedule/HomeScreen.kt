@@ -16,20 +16,84 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import martinvergara_diegoboggle.pawschedule.model.Appointment
-import martinvergara_diegoboggle.pawschedule.navigation.AppScreens // <--- CORREGIDO
-import martinvergara_diegoboggle.pawschedule.ui.BounceButton
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import java.util.UUID
+
+data class Appointment(
+    val id: String = UUID.randomUUID().toString(),
+    val petName: String,
+    val ownerName: String,
+    val date: String,
+    val time: String,
+    val symptoms: String
+)
+
+class HomeViewModel(private val userId: String) : ViewModel() {
+
+    private val _appointments = MutableStateFlow<List<Appointment>>(emptyList())
+    val appointments: StateFlow<List<Appointment>> = _appointments.asStateFlow()
+
+    init {
+        loadSampleData()
+    }
+
+    private fun loadSampleData() {
+        if (userId.isNotBlank()) {
+            _appointments.value = listOf(
+                Appointment(
+                    petName = "Firulais",
+                    ownerName = "Diego",
+                    date = "2025-12-01",
+                    time = "10:30",
+                    symptoms = "Tos y fiebre"
+                ),
+                Appointment(
+                    petName = "Misu",
+                    ownerName = "Ana",
+                    date = "2025-12-02",
+                    time = "14:00",
+                    symptoms = "Letargo y pérdida de apetito"
+                )
+            )
+        }
+    }
+
+    fun deleteAppointment(appointmentId: String) {
+        _appointments.update { list -> list.filterNot { it.id == appointmentId } }
+    }
+
+    companion object {
+        fun provideFactory(userId: String): ViewModelProvider.Factory {
+            return object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
+                        return HomeViewModel(userId) as T
+                    }
+                    throw IllegalArgumentException("Unknown ViewModel class")
+                }
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: HomeViewModel = viewModel()
+    userId: String,
+    viewModel: HomeViewModel = viewModel(factory = HomeViewModel.provideFactory(userId))
 ) {
     val appointments by viewModel.appointments.collectAsState()
+
     var showDeleteDialog by remember { mutableStateOf<Appointment?>(null) }
 
     Scaffold(
@@ -37,14 +101,14 @@ fun HomeScreen(
             TopAppBar(
                 title = { Text("Citas Agendadas") },
                 actions = {
-                    // CORREGIDO: Sin comillas ni .kt
-                    IconButton(onClick = { navController.navigate(AppScreens.PetListScreen.route) }) {
+                    IconButton(onClick = {
+                        navController.navigate("pet_list_screen")
+                    }) {
                         Icon(Icons.Filled.Pets, contentDescription = "Mis Mascotas", tint = MaterialTheme.colorScheme.onPrimary)
                     }
 
-                    // CORREGIDO: Sin comillas ni .kt
                     IconButton(onClick = {
-                        navController.navigate(AppScreens.LoginScreen.route) {
+                        navController.navigate("login_screen") {
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         }
                     }) {
@@ -59,8 +123,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                // CORREGIDO: Sin comillas ni .kt
-                onClick = { navController.navigate(AppScreens.AddAppointmentScreen.route) },
+                onClick = { navController.navigate("add_appointment_screen") },
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
             ) {
@@ -69,7 +132,6 @@ fun HomeScreen(
         }
     ) { paddingValues ->
 
-        // Animación 1: Estado Vacío (Si no hay citas)
         AnimatedVisibility(
             visible = appointments.isEmpty(),
             enter = fadeIn(),
@@ -98,7 +160,6 @@ fun HomeScreen(
             }
         }
 
-        // Animación 2: Lista de Citas (Aparece suavemente)
         AnimatedVisibility(
             visible = appointments.isNotEmpty(),
             enter = fadeIn(),
@@ -123,21 +184,20 @@ fun HomeScreen(
             }
         }
 
-        // Diálogo de confirmación para eliminar
         showDeleteDialog?.let { appointmentToDelete ->
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = null },
                 title = { Text("Confirmar Eliminación") },
                 text = { Text("¿Estás seguro de que quieres eliminar la cita para ${appointmentToDelete.petName}?") },
                 confirmButton = {
-                    BounceButton(
+                    Button(
                         onClick = {
                             viewModel.deleteAppointment(appointmentToDelete.id)
                             showDeleteDialog = null
-                        },
-                        text = "Eliminar",
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                    )
+                        }
+                    ) {
+                        Text("Eliminar")
+                    }
                 },
                 dismissButton = {
                     TextButton(onClick = { showDeleteDialog = null }) {

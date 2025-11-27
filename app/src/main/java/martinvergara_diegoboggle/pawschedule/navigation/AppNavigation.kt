@@ -17,15 +17,14 @@ import martinvergara_diegoboggle.pawschedule.ui.screens.pet_profile.PetListScree
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    // ✅ CORRECCIÓN: AuthViewModel compartido en toda la app
     val authViewModel: AuthViewModel = viewModel()
 
-    NavHost(
+    NavHost( //ESTE ES LE VEHÍCULO DE NAVEGACION.
         navController = navController,
         startDestination = AppScreens.LoginScreen.route
     ) {
-        composable(route = AppScreens.LoginScreen.route) {
-            LoginScreen(navController = navController, authViewModel = authViewModel)
+        composable(route = AppScreens.LoginScreen.route) { //COMPOSABLE SON LOS DESTINOS, ROUTE, LA RUTA
+            LoginScreen(navController = navController, authViewModel = authViewModel) //EQUIPAJE, INFO QUE SE PASA DE PANTALLA EN PANTALLA.
         }
 
         composable(route = AppScreens.RegisterScreen.route) {
@@ -33,22 +32,18 @@ fun AppNavigation() {
         }
 
         composable(route = AppScreens.HomeScreen.route) {
-            // ✅ Pasamos el authViewModel
             HomeScreen(navController = navController, authViewModel = authViewModel)
         }
 
         composable(route = AppScreens.AddAppointmentScreen.route) {
-            // ✅ Pasamos el authViewModel
             AddAppointmentScreen(navController = navController, authViewModel = authViewModel)
         }
 
         composable(route = AppScreens.PetListScreen.route) {
-            // ✅ Pasamos el authViewModel
             PetListScreen(navController = navController, authViewModel = authViewModel)
         }
 
         composable(route = AppScreens.AddPetScreen.route) {
-            // ✅ Pasamos el authViewModel
             AddPetScreen(navController = navController, authViewModel = authViewModel)
         }
     }

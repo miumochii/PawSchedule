@@ -1,5 +1,7 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.add_appointment
 
+//SUPERVISOR SI LO AGREGADO EN ADDAPPOINTMENT ESTÁ CORRECTO
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +15,6 @@ import martinvergara_diegoboggle.pawschedule.model.Appointment
 import martinvergara_diegoboggle.pawschedule.model.Pet
 
 class AddAppointmentViewModel(
-    // ✅ CORRECCIÓN: Recibimos el userId directamente
     private val userId: Int = 0
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AppointmentFormUiState())
@@ -93,7 +94,7 @@ class AddAppointmentViewModel(
                 date = state.date,
                 time = state.time,
                 symptoms = state.symptoms,
-                ownerId = userId // ✅ AGREGADO
+                ownerId = userId
             )
             viewModelScope.launch {
                 AppointmentRepository.addAppointment(newAppointment)

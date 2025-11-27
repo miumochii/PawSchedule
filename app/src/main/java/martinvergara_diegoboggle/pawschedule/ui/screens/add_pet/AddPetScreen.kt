@@ -1,5 +1,7 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.add_pet
 
+//PANTALLA DE MASCOTAS
+
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -12,7 +14,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CameraAlt
@@ -38,13 +42,16 @@ import martinvergara_diegoboggle.pawschedule.ui.screens.auth.AuthViewModel
 @Composable
 fun AddPetScreen(
     navController: NavController,
-    authViewModel: AuthViewModel, // ✅ AGREGADO
+    authViewModel: AuthViewModel,
     viewModel: AddPetViewModel = viewModel(
         factory = AddPetViewModelFactory(authViewModel.getCurrentUserId())
     )
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val breeds by viewModel.breeds.collectAsState()
     val context = LocalContext.current
+
+    var expandedBreedDropdown by remember { mutableStateOf(false) }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -99,7 +106,8 @@ fun AddPetScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -153,13 +161,51 @@ fun AddPetScreen(
                 }
             }
 
-            OutlinedTextField(
-                value = uiState.breed,
-                onValueChange = viewModel::onBreedChange,
-                label = { Text("Raza (opcional)") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+            if (breeds.isNotEmpty()) {
+                ExposedDropdownMenuBox(
+                    expanded = expandedBreedDropdown,
+                    onExpandedChange = { expandedBreedDropdown = !expandedBreedDropdown },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = uiState.breed.ifEmpty { "Seleccionar raza" },
+                        onValueChange = {},
+                        label = { Text("Raza") },
+                        readOnly = true,
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedBreedDropdown)
+                        },
+                        colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .menuAnchor()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expandedBreedDropdown,
+                        onDismissRequest = { expandedBreedDropdown = false }
+                    ) {
+                        breeds.forEach { breed ->
+                            DropdownMenuItem(
+                                text = { Text(text = breed) },
+                                onClick = {
+                                    viewModel.onBreedChange(breed)
+                                    expandedBreedDropdown = false
+                                }
+                            )
+                        }
+                    }
+                }
+            } else {
+                OutlinedTextField(
+                    value = uiState.breed,
+                    onValueChange = viewModel::onBreedChange,
+                    label = { Text("Raza (Cargando razas...)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    enabled = false
+                )
+            }
 
             OutlinedTextField(
                 value = uiState.location,
@@ -199,7 +245,7 @@ fun AddPetScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(8.dp))
 
             BounceButton(
                 text = "Guardar Mascota",
@@ -218,7 +264,6 @@ fun AddPetScreen(
     }
 }
 
-// ✅ AGREGADO: Factory para pasar userId
 class AddPetViewModelFactory(private val userId: Int) : androidx.lifecycle.ViewModelProvider.Factory {
     override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AddPetViewModel::class.java)) {

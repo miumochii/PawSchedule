@@ -1,5 +1,7 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.add_appointment
 
+//PANTALLA DE AGREGAR CITAS
+
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -31,7 +33,7 @@ import java.util.TimeZone
 @Composable
 fun AddAppointmentScreen(
     navController: NavController,
-    authViewModel: AuthViewModel, // ✅ AGREGADO
+    authViewModel: AuthViewModel,
     viewModel: AddAppointmentViewModel = viewModel(
         factory = AddAppointmentViewModelFactory(authViewModel.getCurrentUserId())
     )
@@ -317,7 +319,6 @@ fun TimePickerDialog(
     )
 }
 
-// ✅ AGREGADO: Factory para pasar userId
 class AddAppointmentViewModelFactory(private val userId: Int) : androidx.lifecycle.ViewModelProvider.Factory {
     override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AddAppointmentViewModel::class.java)) {

@@ -1,5 +1,5 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.auth
-
+//LOGICA PARA LOGIN SCREEN Y REGISTER SCREEN
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -44,7 +44,6 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    // ✅ CORRECCIÓN: Ahora retorna Boolean y usa callback
     fun login(onSuccess: () -> Unit) {
         val state = _uiState.value
         if (state.email.isBlank() || state.password.isBlank()) {
@@ -66,11 +65,9 @@ class AuthViewModel : ViewModel() {
                     )
                 }
 
-                // Cargamos datos del usuario
                 PetRepository.fetchPets(response.userId)
                 AppointmentRepository.fetchAppointments(response.userId)
 
-                // ✅ Llamamos al callback de éxito
                 onSuccess()
 
             } catch (e: Exception) {
@@ -82,7 +79,6 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    // ✅ CORRECCIÓN: Ahora retorna Boolean y usa callback
     fun register(onSuccess: () -> Unit) {
         val state = _uiState.value
         if (state.password != state.confirmPassword) {
@@ -106,7 +102,6 @@ class AuthViewModel : ViewModel() {
                 PetRepository.fetchPets(response.userId)
                 AppointmentRepository.fetchAppointments(response.userId)
 
-                // ✅ Llamamos al callback de éxito
                 onSuccess()
 
             } catch (e: Exception) {

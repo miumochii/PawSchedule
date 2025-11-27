@@ -1,5 +1,5 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.home
-
+//LOGICA DEL HOME
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,8 +17,6 @@ class HomeViewModel : ViewModel() {
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
         )
-
-    // ✅ CORRECCIÓN: Ahora recibe userId
     fun deleteAppointment(appointmentId: Int, userId: Int) {
         repository.deleteAppointment(appointmentId, userId)
     }

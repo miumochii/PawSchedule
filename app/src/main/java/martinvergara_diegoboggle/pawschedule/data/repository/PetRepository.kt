@@ -1,5 +1,5 @@
 package martinvergara_diegoboggle.pawschedule.data.repository
-
+//AQUI SE GUARDA INFO TAMBIEN.
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +14,7 @@ object PetRepository {
     private val _pets = MutableStateFlow<List<Pet>>(emptyList())
     val pets = _pets.asStateFlow()
 
-    // 1. CARGAR DATOS (READ)
+    //CARGAR DATOS
     fun fetchPets(userId: Int) {
         if (userId == 0) {
             Log.w("PET_REPO", "fetchPets: userId es 0, operación cancelada")
@@ -33,7 +33,7 @@ object PetRepository {
         }
     }
 
-    // 2. GUARDAR DATOS (CREATE)
+    //GUARDAR DATOS
     fun addPet(pet: Pet) {
         if (pet.ownerId == 0) {
             Log.e("PET_REPO", "❌ addPet: ownerId es 0, operación cancelada")
@@ -54,7 +54,7 @@ object PetRepository {
         }
     }
 
-    // 3. BORRAR DATOS (DELETE)
+    //BORRAR DATOS
     fun deletePet(petId: Int, userId: Int) {
         if (userId == 0) {
             Log.w("PET_REPO", "deletePet: userId es 0, operación cancelada")

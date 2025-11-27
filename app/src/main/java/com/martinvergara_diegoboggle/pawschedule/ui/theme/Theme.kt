@@ -1,5 +1,7 @@
 package com.martinvergara_diegoboggle.pawschedule.ui.theme
 
+// IMPORTANTE MENCIONAR: ESTE CÓDIGO ES DE LA PLANTILLA, YA NO SE UTILIZA.
+
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

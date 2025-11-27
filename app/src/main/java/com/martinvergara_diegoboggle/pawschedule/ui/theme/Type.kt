@@ -1,5 +1,7 @@
 package com.martinvergara_diegoboggle.pawschedule.ui.theme
 
+// IMPORTANTE MENCIONAR: ESTE CÓDIGO ES DE LA PLANTILLA, YA NO SE UTILIZA.
+
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily

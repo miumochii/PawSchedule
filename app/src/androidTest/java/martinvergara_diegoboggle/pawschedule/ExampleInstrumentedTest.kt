@@ -1,5 +1,5 @@
 package martinvergara_diegoboggle.pawschedule
-
+//AUTOMATICO POR ANDROID STUDIO
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 

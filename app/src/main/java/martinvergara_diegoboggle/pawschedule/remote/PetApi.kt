@@ -1,5 +1,7 @@
 package martinvergara_diegoboggle.pawschedule.remote
 
+//AQUÍ SE DEFINEN LAS OPERACIONES DE LA API, RETROFIT LAS EJECUTA DESPUES.
+
 import martinvergara_diegoboggle.pawschedule.model.Pet
 import retrofit2.http.*
 

@@ -1,4 +1,5 @@
 package martinvergara_diegoboggle.pawschedule.data.repository
+//AQUI TAMBIÉN SE GUARDA LA INFO.
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import martinvergara_diegoboggle.pawschedule.model.User

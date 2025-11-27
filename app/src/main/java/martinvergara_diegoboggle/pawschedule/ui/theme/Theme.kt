@@ -1,9 +1,12 @@
 package martinvergara_diegoboggle.pawschedule.ui.theme
 
+//AQUI DECIMOS DONDE USAR CADA COLOR
+
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -15,7 +18,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Definimos el esquema de colores Claros (Light Mode)
 private val LightColorScheme = lightColorScheme(
     primary = PawPrimary,
     onPrimary = PawOnPrimary,
@@ -29,10 +31,9 @@ private val LightColorScheme = lightColorScheme(
     onSurface = PawOnSurface,
     onSurfaceVariant = PawOnSurfaceVariant,
     outline = PawOutline,
-    error = PawSecondary // Usamos el naranja para errores en vez de rojo sangre
+    error = PawSecondary
 )
 
-// (Opcional) Esquema Oscuro básico
 private val DarkColorScheme = darkColorScheme(
     primary = PawPrimary,
     secondary = PawSecondary,
@@ -42,8 +43,7 @@ private val DarkColorScheme = darkColorScheme(
 @Composable
 fun PawScheduleTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // IMPORTANTE: Ponemos esto en false para que respete TUS colores y no los de Android
-    dynamicColor: Boolean = false,
+    dynamicColor: Boolean = false, //ESTO ES ESA FUNCIONALIDAD RARA DE LOS ANDROID QUE CAMBIAN LOS COLORES DE LAS COSAS, ASI QUE FALSE.
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -59,7 +59,6 @@ fun PawScheduleTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            // Pintamos la barra de estado del color de fondo para que se vea "Full Screen" limpio
             window.statusBarColor = colorScheme.background.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
@@ -67,8 +66,8 @@ fun PawScheduleTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography, // Asegúrate de tener Typography.kt (o usa el default)
-        // shapes = Shapes, // Si tienes un archivo Shapes.kt, úsalo aquí
+        typography = Typography,
+        shapes = Shapes,
         content = content
     )
 }

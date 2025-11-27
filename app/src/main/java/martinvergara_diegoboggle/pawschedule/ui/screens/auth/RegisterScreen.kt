@@ -1,5 +1,5 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.auth
-
+//PANTALLA DE REGISTRO
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -91,7 +91,6 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // ✅ CORRECCIÓN: Usamos callback
             BounceButton(
                 text = "Registrarse",
                 onClick = {

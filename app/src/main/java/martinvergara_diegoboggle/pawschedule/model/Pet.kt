@@ -12,11 +12,10 @@ data class Pet(
     @SerializedName("breed")
     val breed: String = "",
 
-    // ✅ CORRECCIÓN CRÍTICA: Tu backend usa camelCase, no snake_case
-    @SerializedName("ownerId")  // ⚠️ Cambio: ownerId en lugar de owner_id
+    @SerializedName("ownerId")
     val ownerId: Int = 0,
 
-    @SerializedName("imageUri")  // ⚠️ Cambio: imageUri en lugar de image_uri
+    @SerializedName("imageUri")
     val imageUri: String = ""
 ) {
     fun toCreateRequest() = PetCreateRequest(
@@ -27,17 +26,16 @@ data class Pet(
     )
 }
 
-// DTO para crear mascotas (sin ID)
-data class PetCreateRequest(
+data class PetCreateRequest( //ESTE CREA LA MASCOTA, POR ESO NO TIENE ID, SE LA ASIGNA LA BASE DE DATOS.
     @SerializedName("name")
     val name: String,
 
     @SerializedName("breed")
     val breed: String,
 
-    @SerializedName("ownerId")  // ✅ camelCase
+    @SerializedName("ownerId")
     val ownerId: Int,
 
-    @SerializedName("imageUri")  // ✅ camelCase
+    @SerializedName("imageUri")
     val imageUri: String = ""
 )

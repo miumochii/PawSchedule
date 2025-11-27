@@ -1,5 +1,5 @@
 package martinvergara_diegoboggle.pawschedule.data.repository
-
+//AQUI SE GUARDA LA INFO.
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +14,7 @@ object AppointmentRepository {
     private val _appointments = MutableStateFlow<List<Appointment>>(emptyList())
     val appointments = _appointments.asStateFlow()
 
-    // 1. CARGAR DATOS (READ)
+    //CARGAR DATOS
     fun fetchAppointments(userId: Int) {
         if (userId == 0) {
             Log.w("APPOINTMENT_REPO", "fetchAppointments: userId es 0, operación cancelada")
@@ -33,7 +33,7 @@ object AppointmentRepository {
         }
     }
 
-    // 2. GUARDAR DATOS (CREATE)
+    //GUARDAR DATOS
     fun addAppointment(appointment: Appointment) {
         if (appointment.ownerId == 0) {
             Log.e("APPOINTMENT_REPO", "❌ addAppointment: ownerId es 0, operación cancelada")
@@ -44,8 +44,6 @@ object AppointmentRepository {
             try {
                 val createdAppointment = RetrofitClient.pawApiService.createAppointment(appointment)
                 Log.d("APPOINTMENT_REPO", "✅ Cita creada en servidor: $createdAppointment")
-
-                // Sincronizamos la lista
                 fetchAppointments(appointment.ownerId)
             } catch (e: Exception) {
                 Log.e("APPOINTMENT_REPO", "❌ Error al guardar cita: ${e.message}", e)
@@ -54,7 +52,7 @@ object AppointmentRepository {
         }
     }
 
-    // 3. BORRAR DATOS (DELETE)
+    //BORRAR DATOS
     fun deleteAppointment(appId: Int, userId: Int) {
         if (userId == 0) {
             Log.w("APPOINTMENT_REPO", "deleteAppointment: userId es 0, operación cancelada")
@@ -67,7 +65,6 @@ object AppointmentRepository {
 
                 if (response.isSuccessful) {
                     Log.d("APPOINTMENT_REPO", "✅ Cita eliminada: appId=$appId")
-                    // Sincronizamos la lista
                     fetchAppointments(userId)
                 } else {
                     Log.e("APPOINTMENT_REPO", "❌ Error del servidor: ${response.code()} - ${response.message()}")

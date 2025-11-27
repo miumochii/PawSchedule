@@ -1,5 +1,7 @@
 package martinvergara_diegoboggle.pawschedule.ui.screens.home
 
+//PANTALLA PRINCIPAL (DONDE VAN LAS CITAS)
+
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -28,7 +30,7 @@ import martinvergara_diegoboggle.pawschedule.ui.screens.auth.AuthViewModel
 @Composable
 fun HomeScreen(
     navController: NavController,
-    authViewModel: AuthViewModel, // ✅ AGREGADO
+    authViewModel: AuthViewModel,
     viewModel: HomeViewModel = viewModel()
 ) {
     val appointments by viewModel.appointments.collectAsState()
@@ -45,7 +47,7 @@ fun HomeScreen(
                     }
 
                     IconButton(onClick = {
-                        authViewModel.logout() // ✅ AGREGADO: Cerrar sesión
+                        authViewModel.logout() //
                         navController.navigate(AppScreens.LoginScreen.route) {
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         }
@@ -131,7 +133,6 @@ fun HomeScreen(
                 confirmButton = {
                     BounceButton(
                         onClick = {
-                            // ✅ CORRECCIÓN: Pasamos userId
                             viewModel.deleteAppointment(
                                 appointmentToDelete.id,
                                 authViewModel.getCurrentUserId()

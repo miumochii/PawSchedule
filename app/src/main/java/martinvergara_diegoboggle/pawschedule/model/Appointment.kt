@@ -6,11 +6,10 @@ data class Appointment(
     @SerializedName("id")
     val id: Int = 0,
 
-    // ✅ CORRECCIÓN CRÍTICA: Tu backend usa camelCase, no snake_case
-    @SerializedName("petName")  // ⚠️ Cambio: petName en lugar de pet_name
+    @SerializedName("petName")
     val petName: String = "",
 
-    @SerializedName("ownerName")  // ⚠️ Cambio: ownerName en lugar de owner_name
+    @SerializedName("ownerName")
     val ownerName: String = "",
 
     @SerializedName("date")
@@ -22,7 +21,7 @@ data class Appointment(
     @SerializedName("symptoms")
     val symptoms: String = "",
 
-    @SerializedName("ownerId")  // ⚠️ Cambio: ownerId en lugar de owner_id
+    @SerializedName("ownerId")
     val ownerId: Int = 0
 ) {
     fun toCreateRequest() = AppointmentCreateRequest(
@@ -35,12 +34,12 @@ data class Appointment(
     )
 }
 
-// DTO para crear citas (sin ID)
-data class AppointmentCreateRequest(
-    @SerializedName("petName")  // ✅ camelCase
+
+data class AppointmentCreateRequest( //ESTE CREA LA CITA, POR ESO NO TIENE ID, SE LA ASIGNA LA BASE DE DATOS.
+    @SerializedName("petName")
     val petName: String,
 
-    @SerializedName("ownerName")  // ✅ camelCase
+    @SerializedName("ownerName")
     val ownerName: String,
 
     @SerializedName("date")
@@ -52,6 +51,6 @@ data class AppointmentCreateRequest(
     @SerializedName("symptoms")
     val symptoms: String,
 
-    @SerializedName("ownerId")  // ✅ camelCase
+    @SerializedName("ownerId")
     val ownerId: Int
 )

@@ -1,5 +1,5 @@
 package martinvergara_diegoboggle.pawschedule.ui
-
+//LAS ANIMACIONES PARA EL FEEDBACK INMEDIATO
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -24,18 +24,16 @@ fun BounceButton(
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
 ) {
-    // 1. Creamos una fuente de interacción para "escuchar" al botón
-    val interactionSource = remember { MutableInteractionSource() }
+    val interactionSource = remember { MutableInteractionSource() } //ESTA ES LA OPCION QUE ACTIVA PARA ESCUCHAR EL BOTON
 
-    // 2. Detectamos si el botón está presionado o no
-    val isPressed by interactionSource.collectIsPressedAsState()
+    val isPressed by interactionSource.collectIsPressedAsState() //ESTO RESCATA SI ESTA O NO PRESIONADO
 
-    // 3. Animación: Si está presionado baja a 0.90f, si no, vuelve a 1f
+
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.85f else 1f, // Ajusta 0.90f para más o menos rebote
+        targetValue = if (isPressed) 0.85f else 1f,
         animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy, // Rebote elástico
-            stiffness = Spring.StiffnessLow // Velocidad suave
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
         ),
         label = "scaleAnimation"
     )
@@ -44,11 +42,11 @@ fun BounceButton(
         onClick = onClick,
         modifier = modifier
             .graphicsLayer {
-                // Aplicamos la escala aquí
+
                 scaleX = scale
                 scaleY = scale
             },
-        interactionSource = interactionSource, // Conectamos el "escucha"
+        interactionSource = interactionSource, // CONECTA EL ESCUCHAR
         colors = colors,
         contentPadding = contentPadding
     ) {
