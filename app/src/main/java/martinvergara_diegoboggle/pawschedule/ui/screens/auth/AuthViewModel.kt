@@ -13,12 +13,9 @@ import martinvergara_diegoboggle.pawschedule.data.network.UserAuth
 import martinvergara_diegoboggle.pawschedule.data.repository.PetRepository
 import martinvergara_diegoboggle.pawschedule.data.repository.AppointmentRepository
 
-
 class AuthViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
-
-    // Las funciones onXxxChange se mantienen iguales...
 
     fun onEmailChange(email: String) {
         _uiState.update { it.copy(email = email, errorMessage = null) }
@@ -32,12 +29,10 @@ class AuthViewModel : ViewModel() {
         _uiState.update { it.copy(confirmPassword = password, errorMessage = null) }
     }
 
-    // --- FUNCIÓN CLAVE: Devuelve el ID para el Scoping de datos ---
     fun getCurrentUserId(): Int {
         return _uiState.value.currentUserId
     }
 
-    // --- FUNCIÓN DE LOGOUT ---
     fun logout() {
         _uiState.update {
             it.copy(
@@ -49,8 +44,8 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    // --- FUNCIÓN DE LOGIN (ASÍNCRONA: Habla con tu Microservicio) ---
-    fun login() {
+    // ✅ CORRECCIÓN: Ahora retorna Boolean y usa callback
+    fun login(onSuccess: () -> Unit) {
         val state = _uiState.value
         if (state.email.isBlank() || state.password.isBlank()) {
             _uiState.update { it.copy(errorMessage = "Correo y contraseña no pueden estar vacíos.") }
@@ -60,32 +55,35 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val authData = UserAuth(state.email, state.password)
-                // Llamada Retrofit al endpoint de Login
                 val response = RetrofitClient.authApiService.loginUser(authData)
 
-                // ÉXITO: Guardamos la sesión y el ID
                 _uiState.update {
                     it.copy(
                         currentUserId = response.userId,
                         isLoggedIn = true,
                         errorMessage = null,
-                        password = "" // Limpiamos la contraseña de la memoria
+                        password = ""
                     )
                 }
 
-                // MUY IMPORTANTE: Recargamos los datos del nuevo usuario
+                // Cargamos datos del usuario
                 PetRepository.fetchPets(response.userId)
                 AppointmentRepository.fetchAppointments(response.userId)
 
+                // ✅ Llamamos al callback de éxito
+                onSuccess()
+
             } catch (e: Exception) {
                 Log.e("AUTH_ERROR", "Login failed: ${e.message}")
-                _uiState.update { it.copy(errorMessage = "Credenciales incorrectas o servidor no disponible.") }
+                _uiState.update {
+                    it.copy(errorMessage = "Credenciales incorrectas o servidor no disponible.")
+                }
             }
         }
     }
 
-    // --- FUNCIÓN DE REGISTRO (ASÍNCRONA) ---
-    fun register() {
+    // ✅ CORRECCIÓN: Ahora retorna Boolean y usa callback
+    fun register(onSuccess: () -> Unit) {
         val state = _uiState.value
         if (state.password != state.confirmPassword) {
             _uiState.update { it.copy(errorMessage = "Las contraseñas no coinciden.") }
@@ -97,7 +95,6 @@ class AuthViewModel : ViewModel() {
                 val authData = UserAuth(state.email, state.password)
                 val response = RetrofitClient.authApiService.registerUser(authData)
 
-                // ÉXITO: Guardamos la sesión y el ID
                 _uiState.update {
                     it.copy(
                         currentUserId = response.userId,
@@ -106,24 +103,27 @@ class AuthViewModel : ViewModel() {
                     )
                 }
 
-                // Recargamos (la lista estará vacía, pero la preparamos)
                 PetRepository.fetchPets(response.userId)
                 AppointmentRepository.fetchAppointments(response.userId)
 
+                // ✅ Llamamos al callback de éxito
+                onSuccess()
+
             } catch (e: Exception) {
                 Log.e("AUTH_ERROR", "Registro fallido: ${e.message}")
-                _uiState.update { it.copy(errorMessage = "El correo electrónico ya está en uso.") }
+                _uiState.update {
+                    it.copy(errorMessage = "El correo electrónico ya está en uso.")
+                }
             }
         }
     }
 }
 
-// ESTADO (ACTUALIZADO CON LA GESTIÓN DE SESIÓN)
 data class AuthUiState(
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",
     val errorMessage: String? = null,
-    val currentUserId: Int = 0, // ID numérico para las transacciones (0 = no logueado)
-    val isLoggedIn: Boolean = false // Estado de la sesión
+    val currentUserId: Int = 0,
+    val isLoggedIn: Boolean = false
 )

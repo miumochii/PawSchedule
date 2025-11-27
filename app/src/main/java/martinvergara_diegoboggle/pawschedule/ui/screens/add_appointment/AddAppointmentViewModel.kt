@@ -12,16 +12,17 @@ import martinvergara_diegoboggle.pawschedule.data.repository.PetRepository
 import martinvergara_diegoboggle.pawschedule.model.Appointment
 import martinvergara_diegoboggle.pawschedule.model.Pet
 
-class AddAppointmentViewModel : ViewModel() {
+class AddAppointmentViewModel(
+    // ✅ CORRECCIÓN: Recibimos el userId directamente
+    private val userId: Int = 0
+) : ViewModel() {
     private val _uiState = MutableStateFlow(AppointmentFormUiState())
     val uiState: StateFlow<AppointmentFormUiState> = _uiState.asStateFlow()
 
-    // NUEVO: Lista de mascotas para el selector (Dropdown)
     private val _availablePets = MutableStateFlow<List<Pet>>(emptyList())
     val availablePets: StateFlow<List<Pet>> = _availablePets.asStateFlow()
 
     init {
-        // Cargar las mascotas existentes al iniciar
         viewModelScope.launch {
             PetRepository.pets.collect { pets ->
                 _availablePets.value = pets
@@ -91,9 +92,9 @@ class AddAppointmentViewModel : ViewModel() {
                 ownerName = state.ownerName,
                 date = state.date,
                 time = state.time,
-                symptoms = state.symptoms
+                symptoms = state.symptoms,
+                ownerId = userId // ✅ AGREGADO
             )
-            // Usamos viewModelScope para estar listos para la Base de Datos
             viewModelScope.launch {
                 AppointmentRepository.addAppointment(newAppointment)
             }

@@ -18,8 +18,8 @@ class HomeViewModel : ViewModel() {
             initialValue = emptyList()
         )
 
-    // CORRECCIÓN: Cambiamos String por Int para que coincida con el Backend
-    fun deleteAppointment(appointmentId: Int) {
-        repository.deleteAppointment(appointmentId)
+    // ✅ CORRECCIÓN: Ahora recibe userId
+    fun deleteAppointment(appointmentId: Int, userId: Int) {
+        repository.deleteAppointment(appointmentId, userId)
     }
 }

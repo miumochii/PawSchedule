@@ -6,8 +6,8 @@ import martinvergara_diegoboggle.pawschedule.data.repository.PetRepository
 class PetViewModel : ViewModel() {
     val pets = PetRepository.pets
 
-    // CORRECCIÓN: Cambiamos 'String' por 'Int' para que coincida con el Repositorio y el Modelo
-    fun deletePet(petId: Int) {
-        PetRepository.deletePet(petId)
+    // ✅ CORRECCIÓN: Ahora recibe userId
+    fun deletePet(petId: Int, userId: Int) {
+        PetRepository.deletePet(petId, userId)
     }
 }

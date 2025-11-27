@@ -28,7 +28,6 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                     }
                 },
-                // CAMBIO 1: Colores de la barra para que combine (Turquesa y Blanco)
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
@@ -46,7 +45,6 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // CAMBIO 2: Título en color Turquesa
             Text(
                 text = "Únete a PawSchedule",
                 style = MaterialTheme.typography.headlineSmall,
@@ -93,14 +91,17 @@ fun RegisterScreen(navController: NavController, authViewModel: AuthViewModel) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            // ✅ CORRECCIÓN: Usamos callback
             BounceButton(
                 text = "Registrarse",
                 onClick = {
-                    if (authViewModel.register()) {
-                        navController.navigate(AppScreens.HomeScreen.route) {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                    authViewModel.register(
+                        onSuccess = {
+                            navController.navigate(AppScreens.HomeScreen.route) {
+                                popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                            }
                         }
-                    }
+                    )
                 },
                 modifier = Modifier.fillMaxWidth()
             )

@@ -17,42 +17,39 @@ import martinvergara_diegoboggle.pawschedule.ui.screens.pet_profile.PetListScree
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    // Compartimos el AuthViewModel para que el estado de login/registro persista
+    // ✅ CORRECCIÓN: AuthViewModel compartido en toda la app
     val authViewModel: AuthViewModel = viewModel()
 
     NavHost(
         navController = navController,
         startDestination = AppScreens.LoginScreen.route
     ) {
-        // 1. Login
         composable(route = AppScreens.LoginScreen.route) {
             LoginScreen(navController = navController, authViewModel = authViewModel)
         }
 
-        // 2. Registro
         composable(route = AppScreens.RegisterScreen.route) {
             RegisterScreen(navController = navController, authViewModel = authViewModel)
         }
 
-        // 3. Home (Principal)
         composable(route = AppScreens.HomeScreen.route) {
-            // Nota: Aquí viewModel() crea una instancia nueva o usa la por defecto definida en la pantalla
-            HomeScreen(navController = navController)
+            // ✅ Pasamos el authViewModel
+            HomeScreen(navController = navController, authViewModel = authViewModel)
         }
 
-        // 4. Agendar Cita
         composable(route = AppScreens.AddAppointmentScreen.route) {
-            AddAppointmentScreen(navController = navController)
+            // ✅ Pasamos el authViewModel
+            AddAppointmentScreen(navController = navController, authViewModel = authViewModel)
         }
 
-        // 5. Lista de Mascotas
         composable(route = AppScreens.PetListScreen.route) {
-            PetListScreen(navController = navController)
+            // ✅ Pasamos el authViewModel
+            PetListScreen(navController = navController, authViewModel = authViewModel)
         }
 
-        // 6. Añadir Mascota (La nueva pantalla con GPS y Cámara)
         composable(route = AppScreens.AddPetScreen.route) {
-            AddPetScreen(navController = navController)
+            // ✅ Pasamos el authViewModel
+            AddPetScreen(navController = navController, authViewModel = authViewModel)
         }
     }
 }

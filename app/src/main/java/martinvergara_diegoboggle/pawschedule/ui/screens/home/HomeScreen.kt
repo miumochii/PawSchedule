@@ -19,14 +19,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import martinvergara_diegoboggle.pawschedule.model.Appointment
-import martinvergara_diegoboggle.pawschedule.navigation.AppScreens // <--- CORREGIDO
+import martinvergara_diegoboggle.pawschedule.navigation.AppScreens
 import martinvergara_diegoboggle.pawschedule.ui.BounceButton
+import martinvergara_diegoboggle.pawschedule.ui.screens.auth.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
     navController: NavController,
+    authViewModel: AuthViewModel, // ✅ AGREGADO
     viewModel: HomeViewModel = viewModel()
 ) {
     val appointments by viewModel.appointments.collectAsState()
@@ -37,18 +39,19 @@ fun HomeScreen(
             TopAppBar(
                 title = { Text("Citas Agendadas") },
                 actions = {
-                    // CORREGIDO: Sin comillas ni .kt
                     IconButton(onClick = { navController.navigate(AppScreens.PetListScreen.route) }) {
-                        Icon(Icons.Filled.Pets, contentDescription = "Mis Mascotas", tint = MaterialTheme.colorScheme.onPrimary)
+                        Icon(Icons.Filled.Pets, contentDescription = "Mis Mascotas",
+                            tint = MaterialTheme.colorScheme.onPrimary)
                     }
 
-                    // CORREGIDO: Sin comillas ni .kt
                     IconButton(onClick = {
+                        authViewModel.logout() // ✅ AGREGADO: Cerrar sesión
                         navController.navigate(AppScreens.LoginScreen.route) {
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         }
                     }) {
-                        Icon(Icons.Filled.Logout, contentDescription = "Cerrar Sesión", tint = MaterialTheme.colorScheme.onPrimary)
+                        Icon(Icons.Filled.Logout, contentDescription = "Cerrar Sesión",
+                            tint = MaterialTheme.colorScheme.onPrimary)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -59,7 +62,6 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                // CORREGIDO: Sin comillas ni .kt
                 onClick = { navController.navigate(AppScreens.AddAppointmentScreen.route) },
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
@@ -69,7 +71,6 @@ fun HomeScreen(
         }
     ) { paddingValues ->
 
-        // Animación 1: Estado Vacío (Si no hay citas)
         AnimatedVisibility(
             visible = appointments.isEmpty(),
             enter = fadeIn(),
@@ -98,7 +99,6 @@ fun HomeScreen(
             }
         }
 
-        // Animación 2: Lista de Citas (Aparece suavemente)
         AnimatedVisibility(
             visible = appointments.isNotEmpty(),
             enter = fadeIn(),
@@ -123,7 +123,6 @@ fun HomeScreen(
             }
         }
 
-        // Diálogo de confirmación para eliminar
         showDeleteDialog?.let { appointmentToDelete ->
             AlertDialog(
                 onDismissRequest = { showDeleteDialog = null },
@@ -132,11 +131,17 @@ fun HomeScreen(
                 confirmButton = {
                     BounceButton(
                         onClick = {
-                            viewModel.deleteAppointment(appointmentToDelete.id)
+                            // ✅ CORRECCIÓN: Pasamos userId
+                            viewModel.deleteAppointment(
+                                appointmentToDelete.id,
+                                authViewModel.getCurrentUserId()
+                            )
                             showDeleteDialog = null
                         },
                         text = "Eliminar",
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
                     )
                 },
                 dismissButton = {
@@ -186,7 +191,8 @@ fun AppointmentCard(appointment: Appointment, onDeleteClick: () -> Unit) {
             }
 
             IconButton(onClick = onDeleteClick) {
-                Icon(Icons.Default.Delete, contentDescription = "Eliminar cita", tint = MaterialTheme.colorScheme.error)
+                Icon(Icons.Default.Delete, contentDescription = "Eliminar cita",
+                    tint = MaterialTheme.colorScheme.error)
             }
         }
     }

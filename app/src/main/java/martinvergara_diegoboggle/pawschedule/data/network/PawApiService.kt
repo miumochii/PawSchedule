@@ -2,6 +2,7 @@ package martinvergara_diegoboggle.pawschedule.data.network
 
 import martinvergara_diegoboggle.pawschedule.model.Appointment
 import martinvergara_diegoboggle.pawschedule.model.Pet
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -12,23 +13,29 @@ interface PawApiService {
 
     // --- ENDPOINTS MASCOTAS ---
 
-    @GET("pets/{owner_id}") // El frontend pide las mascotas filtrando por el ID en la URL
+    @GET("pets/{owner_id}")
     suspend fun getPets(@Path("owner_id") ownerId: Int): List<Pet>
 
     @POST("pets")
-    suspend fun createPet(@Body pet: Pet): Pet // Envía el objeto completo (con el ownerId en el body)
+    suspend fun createPet(@Body pet: Pet): Pet
 
-    @DELETE("pets/{pet_id}/{owner_id}") // Borrado seguro: requiere ID de mascota y ID de dueño
-    suspend fun deletePet(@Path("pet_id") petId: Int, @Path("owner_id") ownerId: Int)
+    @DELETE("pets/{pet_id}/{owner_id}")
+    suspend fun deletePet(
+        @Path("pet_id") petId: Int,
+        @Path("owner_id") ownerId: Int
+    ): Response<Unit>  // ✅ Cambiado para manejar respuesta vacía
 
     // --- ENDPOINTS CITAS ---
 
-    @GET("appointments/{owner_id}") // El frontend pide las citas filtrando por el ID en la URL
+    @GET("appointments/{owner_id}")
     suspend fun getAppointments(@Path("owner_id") ownerId: Int): List<Appointment>
 
     @POST("appointments")
     suspend fun createAppointment(@Body appointment: Appointment): Appointment
 
-    @DELETE("appointments/{app_id}/{owner_id}") // Borrado seguro: requiere ID de cita y ID de dueño
-    suspend fun deleteAppointment(@Path("app_id") appId: Int, @Path("owner_id") ownerId: Int)
+    @DELETE("appointments/{app_id}/{owner_id}")
+    suspend fun deleteAppointment(
+        @Path("app_id") appId: Int,
+        @Path("owner_id") ownerId: Int
+    ): Response<Unit>  // ✅ Cambiado para manejar respuesta vacía
 }

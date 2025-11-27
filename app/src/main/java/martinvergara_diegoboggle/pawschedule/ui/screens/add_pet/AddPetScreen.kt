@@ -32,17 +32,20 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.android.gms.location.LocationServices
 import martinvergara_diegoboggle.pawschedule.ui.BounceButton
+import martinvergara_diegoboggle.pawschedule.ui.screens.auth.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddPetScreen(
     navController: NavController,
-    viewModel: AddPetViewModel = viewModel()
+    authViewModel: AuthViewModel, // ✅ AGREGADO
+    viewModel: AddPetViewModel = viewModel(
+        factory = AddPetViewModelFactory(authViewModel.getCurrentUserId())
+    )
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
-    // 1. Selector de Fotos (Galería nativa)
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri: Uri? ->
@@ -50,10 +53,8 @@ fun AddPetScreen(
         }
     )
 
-    // 2. Cliente de Ubicación (GPS)
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
 
-    // Launcher de Permisos para GPS
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted: Boolean ->
@@ -69,7 +70,7 @@ fun AddPetScreen(
                         }
                     }
                 } catch (e: SecurityException) {
-                    // Manejo de excepción seguro
+                    Log.e("LOCATION_ERROR", "Error: ${e.message}")
                 }
             } else {
                 Toast.makeText(context, "Se requiere permiso de ubicación", Toast.LENGTH_SHORT).show()
@@ -103,7 +104,6 @@ fun AddPetScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // FOTO DE PERFIL (Clickeable para abrir galería)
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -134,7 +134,6 @@ fun AddPetScreen(
             }
             Text("Toca para agregar foto", style = MaterialTheme.typography.bodySmall)
 
-            // CAMPOS DE TEXTO
             Column(modifier = Modifier.fillMaxWidth()) {
                 OutlinedTextField(
                     value = uiState.name,
@@ -162,17 +161,20 @@ fun AddPetScreen(
                 singleLine = true
             )
 
-            // CAMPO DE UBICACIÓN (GPS)
             OutlinedTextField(
                 value = uiState.location,
-                onValueChange = {}, // ReadOnly, se llena con el botón
+                onValueChange = {},
                 label = { Text("Ubicación (Hogar)") },
                 modifier = Modifier.fillMaxWidth(),
                 readOnly = true,
                 leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
                 trailingIcon = {
                     IconButton(onClick = {
-                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        if (ContextCompat.checkSelfPermission(
+                                context,
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
                             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                                 if (location != null) {
                                     val locStr = "${location.latitude}, ${location.longitude}"
@@ -183,7 +185,11 @@ fun AddPetScreen(
                             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                         }
                     }) {
-                        Icon(Icons.Default.MyLocation, contentDescription = "Usar GPS", tint = MaterialTheme.colorScheme.primary)
+                        Icon(
+                            Icons.Default.MyLocation,
+                            contentDescription = "Usar GPS",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             )
@@ -195,7 +201,6 @@ fun AddPetScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // BOTÓN CON LOGS DE DEPURACIÓN
             BounceButton(
                 text = "Guardar Mascota",
                 onClick = {
@@ -210,5 +215,16 @@ fun AddPetScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         }
+    }
+}
+
+// ✅ AGREGADO: Factory para pasar userId
+class AddPetViewModelFactory(private val userId: Int) : androidx.lifecycle.ViewModelProvider.Factory {
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(AddPetViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return AddPetViewModel(userId) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

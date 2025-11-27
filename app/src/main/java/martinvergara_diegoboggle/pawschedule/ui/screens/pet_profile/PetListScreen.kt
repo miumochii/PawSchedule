@@ -21,13 +21,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import martinvergara_diegoboggle.pawschedule.model.Pet
-import martinvergara_diegoboggle.pawschedule.navigation.AppScreens // <--- CORREGIDO
+import martinvergara_diegoboggle.pawschedule.navigation.AppScreens
 import martinvergara_diegoboggle.pawschedule.ui.BounceButton
+import martinvergara_diegoboggle.pawschedule.ui.screens.auth.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PetListScreen(
     navController: NavController,
+    authViewModel: AuthViewModel, // ✅ AGREGADO
     viewModel: PetViewModel = viewModel()
 ) {
     val pets by viewModel.pets.collectAsState()
@@ -51,7 +53,6 @@ fun PetListScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                // CORREGIDO: Sin comillas ni .kt
                 onClick = { navController.navigate(AppScreens.AddPetScreen.route) },
                 containerColor = MaterialTheme.colorScheme.tertiaryContainer,
                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer
@@ -121,11 +122,14 @@ fun PetListScreen(
                 confirmButton = {
                     BounceButton(
                         onClick = {
-                            viewModel.deletePet(petToDelete.id)
+                            // ✅ CORRECCIÓN: Pasamos userId
+                            viewModel.deletePet(petToDelete.id, authViewModel.getCurrentUserId())
                             showDeleteDialog = null
                         },
                         text = "Eliminar",
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
                     )
                 },
                 dismissButton = {
@@ -169,7 +173,8 @@ fun PetCard(pet: Pet, onDeleteClick: () -> Unit) {
                 )
             }
             IconButton(onClick = onDeleteClick) {
-                Icon(Icons.Default.Delete, contentDescription = "Eliminar mascota", tint = MaterialTheme.colorScheme.error)
+                Icon(Icons.Default.Delete, contentDescription = "Eliminar mascota",
+                    tint = MaterialTheme.colorScheme.error)
             }
         }
     }

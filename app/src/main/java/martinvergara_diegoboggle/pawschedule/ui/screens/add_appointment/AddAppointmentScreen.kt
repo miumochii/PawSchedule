@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import martinvergara_diegoboggle.pawschedule.ui.BounceButton
+import martinvergara_diegoboggle.pawschedule.ui.screens.auth.AuthViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,10 +31,12 @@ import java.util.TimeZone
 @Composable
 fun AddAppointmentScreen(
     navController: NavController,
-    viewModel: AddAppointmentViewModel = viewModel()
+    authViewModel: AuthViewModel, // ✅ AGREGADO
+    viewModel: AddAppointmentViewModel = viewModel(
+        factory = AddAppointmentViewModelFactory(authViewModel.getCurrentUserId())
+    )
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    // IMPORTANTE: Recibimos la lista de mascotas del ViewModel
     val availablePets by viewModel.availablePets.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -41,14 +44,11 @@ fun AddAppointmentScreen(
 
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
-
-    // Estado para controlar si el menú de mascotas está abierto o cerrado
     var expandedDropdown by remember { mutableStateOf(false) }
 
     val datePickerState = rememberDatePickerState()
     val timePickerState = rememberTimePickerState()
 
-    // --- DIÁLOGO FECHA ---
     if (showDatePicker) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
@@ -69,7 +69,6 @@ fun AddAppointmentScreen(
         ) { DatePicker(state = datePickerState) }
     }
 
-    // --- DIÁLOGO HORA ---
     if (showTimePicker) {
         TimePickerDialog(
             onDismissRequest = { showTimePicker = false },
@@ -113,7 +112,6 @@ fun AddAppointmentScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
-            // --- AQUÍ ESTÁ LA MEJORA: SELECTOR DE MASCOTAS ---
             if (availablePets.isNotEmpty()) {
                 ExposedDropdownMenuBox(
                     expanded = expandedDropdown,
@@ -122,14 +120,12 @@ fun AddAppointmentScreen(
                 ) {
                     OutlinedTextField(
                         value = uiState.petName,
-                        onValueChange = {}, // ReadOnly porque seleccionamos de la lista
+                        onValueChange = {},
                         label = { Text("Seleccionar Mascota") },
                         readOnly = true,
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDropdown) },
                         colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .menuAnchor(), // Necesario para anclar el menú
+                        modifier = Modifier.fillMaxWidth().menuAnchor(),
                         isError = uiState.errors.petNameError != null
                     )
                     ExposedDropdownMenu(
@@ -147,7 +143,6 @@ fun AddAppointmentScreen(
                         }
                     }
                 }
-                // Error del selector
                 AnimatedVisibility(visible = uiState.errors.petNameError != null) {
                     Text(
                         text = uiState.errors.petNameError ?: "",
@@ -157,7 +152,6 @@ fun AddAppointmentScreen(
                     )
                 }
             } else {
-                // Si no hay mascotas guardadas, mostramos el campo normal para escribir
                 ValidatedTextField(
                     value = uiState.petName,
                     onValueChange = viewModel::onPetNameChange,
@@ -216,7 +210,6 @@ fun AddAppointmentScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // TU BOUNCE BUTTON (Aquí está, funcionando perfecto)
             BounceButton(
                 text = "Guardar Cita",
                 onClick = {
@@ -237,8 +230,6 @@ fun AddAppointmentScreen(
         }
     }
 }
-
-// COMPONENTES AUXILIARES
 
 @Composable
 fun ValidatedTextField(
@@ -297,9 +288,7 @@ fun ReadOnlyClickableTextField(
                     disabledContainerColor = Color.Transparent
                 )
             )
-            Box(
-                modifier = Modifier.matchParentSize().clickable { onClick() }
-            )
+            Box(modifier = Modifier.matchParentSize().clickable { onClick() })
         }
 
         AnimatedVisibility(visible = errorMessage != null) {
@@ -326,4 +315,15 @@ fun TimePickerDialog(
         dismissButton = dismissButton,
         text = content
     )
+}
+
+// ✅ AGREGADO: Factory para pasar userId
+class AddAppointmentViewModelFactory(private val userId: Int) : androidx.lifecycle.ViewModelProvider.Factory {
+    override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(AddAppointmentViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return AddAppointmentViewModel(userId) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
+    }
 }

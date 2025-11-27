@@ -9,55 +9,72 @@ import kotlinx.coroutines.launch
 import martinvergara_diegoboggle.pawschedule.data.network.RetrofitClient
 import martinvergara_diegoboggle.pawschedule.model.Appointment
 
-// El repositorio de citas debe ser un 'object' para ser accesible
 object AppointmentRepository {
 
     private val _appointments = MutableStateFlow<List<Appointment>>(emptyList())
     val appointments = _appointments.asStateFlow()
 
-    // 1. CARGAR DATOS (READ): Ahora requiere el userId
+    // 1. CARGAR DATOS (READ)
     fun fetchAppointments(userId: Int) {
-        if (userId == 0) return
+        if (userId == 0) {
+            Log.w("APPOINTMENT_REPO", "fetchAppointments: userId es 0, operación cancelada")
+            return
+        }
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Llama a getAppointments(userId)
                 val remoteAppointments = RetrofitClient.pawApiService.getAppointments(userId)
                 _appointments.value = remoteAppointments
-                Log.d("API_SUCCESS", "Citas cargadas: ${remoteAppointments.size} para UserID: $userId")
+                Log.d("APPOINTMENT_REPO", "✅ Citas cargadas: ${remoteAppointments.size} para UserID: $userId")
             } catch (e: Exception) {
-                Log.e("API_ERROR", "Error al cargar citas: ${e.message}")
+                Log.e("APPOINTMENT_REPO", "❌ Error al cargar citas: ${e.message}", e)
+                e.printStackTrace()
             }
         }
     }
 
     // 2. GUARDAR DATOS (CREATE)
     fun addAppointment(appointment: Appointment) {
+        if (appointment.ownerId == 0) {
+            Log.e("APPOINTMENT_REPO", "❌ addAppointment: ownerId es 0, operación cancelada")
+            return
+        }
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                RetrofitClient.pawApiService.createAppointment(appointment)
+                val createdAppointment = RetrofitClient.pawApiService.createAppointment(appointment)
+                Log.d("APPOINTMENT_REPO", "✅ Cita creada en servidor: $createdAppointment")
 
-                // Sincronizamos usando el ownerId de la cita
+                // Sincronizamos la lista
                 fetchAppointments(appointment.ownerId)
             } catch (e: Exception) {
-                Log.e("API_ERROR", "Error al guardar cita: ${e.message}")
+                Log.e("APPOINTMENT_REPO", "❌ Error al guardar cita: ${e.message}", e)
+                e.printStackTrace()
             }
         }
     }
 
-    // 3. BORRAR DATOS (DELETE): Ahora requiere el userId
+    // 3. BORRAR DATOS (DELETE)
     fun deleteAppointment(appId: Int, userId: Int) {
-        if (userId == 0) return
+        if (userId == 0) {
+            Log.w("APPOINTMENT_REPO", "deleteAppointment: userId es 0, operación cancelada")
+            return
+        }
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Llama a deleteAppointment(appId, userId)
-                RetrofitClient.pawApiService.deleteAppointment(appId, userId)
+                val response = RetrofitClient.pawApiService.deleteAppointment(appId, userId)
 
-                // Sincronizamos de nuevo usando el userId
-                fetchAppointments(userId)
+                if (response.isSuccessful) {
+                    Log.d("APPOINTMENT_REPO", "✅ Cita eliminada: appId=$appId")
+                    // Sincronizamos la lista
+                    fetchAppointments(userId)
+                } else {
+                    Log.e("APPOINTMENT_REPO", "❌ Error del servidor: ${response.code()} - ${response.message()}")
+                }
             } catch (e: Exception) {
-                Log.e("API_ERROR", "Error al borrar cita: ${e.message}")
+                Log.e("APPOINTMENT_REPO", "❌ Error al borrar cita: ${e.message}", e)
+                e.printStackTrace()
             }
         }
     }
