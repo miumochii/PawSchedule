@@ -3,6 +3,7 @@ package martinvergara_diegoboggle.pawschedule.ui.screens.add_pet
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -194,11 +195,16 @@ fun AddPetScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
+            // BOTÓN CON LOGS DE DEPURACIÓN
             BounceButton(
                 text = "Guardar Mascota",
                 onClick = {
+                    Log.d("DEBUG_PAW", "--- CLICK EN BOTÓN GUARDAR ---")
                     if (viewModel.savePet()) {
+                        Log.d("DEBUG_PAW", "ViewModel retornó TRUE -> Cerrando pantalla")
                         navController.popBackStack()
+                    } else {
+                        Log.d("DEBUG_PAW", "ViewModel retornó FALSE -> Hubo un error de validación")
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

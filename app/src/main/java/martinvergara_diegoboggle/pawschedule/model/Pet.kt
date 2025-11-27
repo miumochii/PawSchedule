@@ -1,17 +1,16 @@
 package martinvergara_diegoboggle.pawschedule.model
 
-// Quitamos los imports de Room por ahora
-// import androidx.room.Entity
-// import androidx.room.PrimaryKey
-
-// Quitamos la etiqueta @Entity
+// El modelo de datos, limpio sin anotaciones de Room
 data class Pet(
-    // Quitamos @PrimaryKey pero mantenemos el ID como Int
+    // ID: Debe ser Int para autoincremento en el backend y para Retrofit
     val id: Int = 0,
 
     val name: String,
     val breed: String,
 
-    val ownerId: String = "",
+    // CORRECCIÓN CLAVE: El ID del dueño debe ser Int, no String
+    val ownerId: Int = 0,
+
+    // Valor por defecto para la URI de la foto
     val imageUri: String = ""
 )
